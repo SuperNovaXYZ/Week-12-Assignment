@@ -29,8 +29,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -58,6 +62,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun DragAndDropBoxes(modifier: Modifier = Modifier) {
     var isPlaying by remember { mutableStateOf(true) }
+    var resetPosition by remember { mutableStateOf(false) }
     Column(modifier = Modifier.fillMaxSize()) {
 
         Row(
@@ -69,6 +74,7 @@ fun DragAndDropBoxes(modifier: Modifier = Modifier) {
             var dragBoxIndex by remember {
                 mutableIntStateOf(0)
             }
+
 
             repeat(boxCount) { index ->
                 Box(
@@ -100,14 +106,12 @@ fun DragAndDropBoxes(modifier: Modifier = Modifier) {
                         enter = scaleIn() + fadeIn(),
                         exit = scaleOut() + fadeOut()
                     ) {
-                        Text(
-                            text = "Right",
-                            fontSize = 40.sp,
-                            color = Color.Red,
-                            fontWeight = FontWeight.Bold,
-
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward, // Right arrow icon
+                            contentDescription = "Right arrow", // Accessibility description
+                            tint = Color.Red,
                             modifier = Modifier
-                                .fillMaxSize()
+                                .size(40.dp) // Adjust size
                                 .dragAndDropSource {
                                     detectTapGestures(
                                         onLongPress = { offset ->
@@ -130,11 +134,18 @@ fun DragAndDropBoxes(modifier: Modifier = Modifier) {
 
 
         val pOffset by animateIntOffsetAsState(
-            targetValue = when (isPlaying) {
-                true -> IntOffset(130, 300)
-                false -> IntOffset(130, 100)
+            targetValue = when {
+                resetPosition -> IntOffset(130, 300)
+                isPlaying -> IntOffset(130, 300)
+                else -> IntOffset(130, 100)
             },
-            animationSpec = tween(3000, easing = LinearEasing)
+            animationSpec = tween(3000, easing = LinearEasing),
+            // Reset the state once the animation completes (when box reaches its target)
+            finishedListener = { offset ->
+                if (offset == IntOffset(130, 300)) {
+                    resetPosition = false  // Set resetPosition back to false after animation completes
+                }
+            }
         )
 
         val rtatView by animateFloatAsState(
@@ -153,13 +164,22 @@ fun DragAndDropBoxes(modifier: Modifier = Modifier) {
                 .background(Color.Red)
         ) {
             Icon(
-                imageVector = Icons.Default.Face,
+                imageVector = Icons.Default.AccountBox,
                 contentDescription = "Face",
                 modifier = Modifier
                     .padding(10.dp)
                     .offset(pOffset.x.dp, pOffset.y.dp)
                     .rotate(rtatView)
             )
+            Button(
+                onClick = {
+                    resetPosition = true
+                    isPlaying = false
+                },
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(text = "Reset Rectangle")
+            }
         }
     }
 }
