@@ -107,11 +107,11 @@ fun DragAndDropBoxes(modifier: Modifier = Modifier) {
                         exit = scaleOut() + fadeOut()
                     ) {
                         Icon(
-                            imageVector = Icons.Default.ArrowForward, // Right arrow icon
-                            contentDescription = "Right arrow", // Accessibility description
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = "Right arrow",
                             tint = Color.Red,
                             modifier = Modifier
-                                .size(40.dp) // Adjust size
+                                .size(40.dp)
                                 .dragAndDropSource {
                                     detectTapGestures(
                                         onLongPress = { offset ->
@@ -135,10 +135,10 @@ fun DragAndDropBoxes(modifier: Modifier = Modifier) {
 
         val pOffset by animateIntOffsetAsState(
             targetValue = if (resetPosition) IntOffset(0, 0) else IntOffset(130, if (isPlaying) 300 else 100),
-            animationSpec = tween(1000, easing = LinearEasing), // Faster reset animation
+            animationSpec = tween(1000, easing = LinearEasing),
             finishedListener = {
                 if (resetPosition) {
-                    resetPosition = false // Ensure state resets only after animation completion
+                    resetPosition = false
                 }
             }
         )
