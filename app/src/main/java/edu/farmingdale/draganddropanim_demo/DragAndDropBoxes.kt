@@ -134,16 +134,11 @@ fun DragAndDropBoxes(modifier: Modifier = Modifier) {
 
 
         val pOffset by animateIntOffsetAsState(
-            targetValue = when {
-                resetPosition -> IntOffset(130, 300)
-                isPlaying -> IntOffset(130, 300)
-                else -> IntOffset(130, 100)
-            },
-            animationSpec = tween(3000, easing = LinearEasing),
-            // Reset the state once the animation completes (when box reaches its target)
-            finishedListener = { offset ->
-                if (offset == IntOffset(130, 300)) {
-                    resetPosition = false  // Set resetPosition back to false after animation completes
+            targetValue = if (resetPosition) IntOffset(0, 0) else IntOffset(130, if (isPlaying) 300 else 100),
+            animationSpec = tween(1000, easing = LinearEasing), // Faster reset animation
+            finishedListener = {
+                if (resetPosition) {
+                    resetPosition = false // Ensure state resets only after animation completion
                 }
             }
         )
